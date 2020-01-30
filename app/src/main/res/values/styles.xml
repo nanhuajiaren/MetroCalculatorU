@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="@android:style/Theme.Holo.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+		<item name="colorPrimary">#81D4FA</item>
+		<item name="colorPrimaryDark">#81D4FA</item>
+		<item name="colorAccent">#81D4FA</item>
 	</style>
 </resources>
