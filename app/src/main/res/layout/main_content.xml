@@ -21,13 +21,15 @@
 				android:layout_width="match_parent"
 				android:ems="10"
 				android:singleLine="true"
-				android:layout_margin="10dp"/>
+				android:layout_margin="10dp"
+				android:id="@+id/maincontentEditTextInput"/>
 
 			<Button
 				android:layout_height="wrap_content"
 				android:layout_width="match_parent"
 				android:text="Button"
-				android:layout_margin="10dp"/>
+				android:layout_margin="10dp"
+				android:onClick="onButtonClick"/>
 
 			<TextView
 				android:layout_height="wrap_content"
