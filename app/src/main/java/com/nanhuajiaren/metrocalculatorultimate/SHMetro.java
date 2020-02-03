@@ -21,6 +21,21 @@ public class SHMetro
 	
 	@SerializedName("global_ending_number_mode")
 	protected List<EndNumberMode> globalEndingNumberMode;
+
+	public int getDataVersion()
+	{
+		return dataVersion;
+	}
+
+	public String getUpdateTime()
+	{
+		return updateTime;
+	}
+	
+	public String getUpdateInfo()
+	{
+		return updateInfo;
+	}
 	
 	public class EndNumberMode
 	{
