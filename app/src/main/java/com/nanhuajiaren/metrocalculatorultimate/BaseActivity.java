@@ -17,6 +17,7 @@ public abstract class BaseActivity extends AppCompatActivity
 {
 	private AlertDialog loadingDialog;
 	protected static final String spName = "settings";
+	private static Boolean isDarkMode = null;
 	
 	@Override
 	public void setContentView(int layoutResID)
@@ -25,6 +26,12 @@ public abstract class BaseActivity extends AppCompatActivity
 		LinearLayout contentHolder = (LinearLayout) findViewById(R.id.globalframeContentLinearLayout);
 		View content = LayoutInflater.from(this).inflate(layoutResID,contentHolder,false);
 		contentHolder.addView(content);
+		if(isDarkMode == null){
+			isDarkMode = getDarkMode();
+		}
+		if(!isDarkMode){
+			setTheme(R.style.AppTheme_Light);
+		}
 	}
 
 	public void setupToolBar(String title)
@@ -172,4 +179,11 @@ public abstract class BaseActivity extends AppCompatActivity
         return false;
     }
 	
+	public void saveDarkMode(boolean mode){
+		saveSPItem("DarkMode",mode);
+	}
+	
+	public boolean getDarkMode(){
+		return getSPItem("DarkMode",true);
+	}
 }
