@@ -331,6 +331,12 @@ public class SHMetro
 				sb.append("\n\n");
 			}
 		}
-		return sb.toString();
+		String result = sb.toString();
+		if(result.equals("")){
+			result = ctx.getString(R.string.not_found,carrageNumber);
+		}else{
+			result = result + ctx.getString(R.string.author);
+		}
+		return result;
 	}
 }

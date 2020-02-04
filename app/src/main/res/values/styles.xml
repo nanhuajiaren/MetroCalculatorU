@@ -4,5 +4,12 @@
 		<item name="colorPrimary">#81D4FA</item>
 		<item name="colorPrimaryDark">#81D4FA</item>
 		<item name="colorAccent">#81D4FA</item>
+		<item name="buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
+	</style>
+	<style name="AppTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="colorPrimary">#81D4FA</item>
+		<item name="colorPrimaryDark">#81D4FA</item>
+		<item name="colorAccent">#81D4FA</item>
+		<item name="buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
 	</style>
 </resources>

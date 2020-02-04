@@ -5,9 +5,19 @@
     <string name="loading">加载中</string>
 	<string name="open">打开</string>
 	<string name="close">关闭</string>
-	<string name="checking_data_update">正在查找数据更新...</string>
+	<string name="ok">确认</string>
+	
+	<string name="author">by @南华假人</string>
+	<string name="calculate">计算!</string>
+	
 	<string name="line">线路:</string>
 	<string name="train_type">车型:</string>
 	<string name="train_number">车号:</string>
+	<string name="enter_carrage_number">车体号...(区分大小写)</string>
+	<string name="not_found">未能找到车体号:%s.</string>
+	
+	<string name="data_updated">数据已更新</string>
+	<string name="update_time">数据发布时间:</string>
+	<string name="update_info">更新信息:</string>
 
 </resources>

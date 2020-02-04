@@ -24,16 +24,21 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.FileWriter;
 import android.app.AlertDialog;
+import android.os.Handler;
+import android.view.animation.TranslateAnimation;
 
 public class MainActivity extends BaseActivity 
 {
 	public static final String UPDATE_URL = "https://gitee.com/nanhuajiaren/shmetro.json/raw/master/shmetro.json";
-	
+
 	private static final int REQUIRE_EXTERNAL_STORAGE = 1;
-	
+
 	private volatile SHMetro metro;
+	private volatile boolean isInAnimation = false;
+	private volatile String waitingText = "a";
 	private DrawerLayout drawer;
-	
+	private TextView outputView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -41,26 +46,31 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.main);
         setupToolBar(getString(R.string.app_name));
 		drawer = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
-		ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this, drawer,(Toolbar) findViewById(R.id.toolbar), R.string.open, R.string.close){};		
+		ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this,drawer,(Toolbar) findViewById(R.id.toolbar),R.string.open,R.string.close){};		
 		toggle.syncState();
 		drawer.setDrawerListener(toggle);
+		outputView = (TextView) findViewById(R.id.maincontentTextViewresult);
 		requireExternalStorage();
 		loadMetro();
 	}
-	
-	public void loadMetro(){
+
+	public void loadMetro()
+	{
 		showLoadDialog();
 		new Thread(){
 			@Override
-			public void run(){
+			public void run()
+			{
 				File dir = new File(getWorkDir());
 				dir.mkdirs();
 				File onlineFileCopy = new File(getWorkDir() + "shmetro.json");
 				metro = SHMetro.from(getFromAssets("shmetro.json"),MainActivity.this);
-				if(onlineFileCopy.exists()){
+				if (onlineFileCopy.exists())
+				{
 					metro = SHMetro.from(readFileByLines(onlineFileCopy),MainActivity.this);
 				}
-				if(getConnectedType() != -1){
+				if (getConnectedType() != -1)
+				{
 					try
 					{
 						URL url = new URL(UPDATE_URL);
@@ -76,13 +86,22 @@ public class MainActivity extends BaseActivity
 								metro = onlineMetro;
 								writeLocalStr(online,onlineFileCopy);
 								runOnUiThread(new Runnable(){
-									@Override
-									public void run(){
-										AlertDialog.Builder ab = new AlertDialog.Builder(MainActivity.this);
-										ab.setMessage(metro.updateInfo);
-										ab.show();
-									}
-								});
+										@Override
+										public void run()
+										{
+											AlertDialog.Builder ab = new AlertDialog.Builder(MainActivity.this);
+											ab.setTitle(R.string.data_updated);
+											StringBuilder sb = new StringBuilder();
+											sb.append(getString(R.string.update_info));
+											sb.append(metro.updateInfo);
+											sb.append("\n");
+											sb.append(getString(R.string.update_time));
+											sb.append(metro.updateTime);
+											ab.setMessage(sb.toString());
+											ab.setPositiveButton(R.string.ok,null);
+											ab.show();
+										}
+									});
 							}
 						}
 					}
@@ -90,65 +109,73 @@ public class MainActivity extends BaseActivity
 					{}
 				}
 				runOnUiThread(new Runnable(){
-					@Override
-					public void run(){
-						hideLoadDialog();
-					}
-				});
+						@Override
+						public void run()
+						{
+							hideLoadDialog();
+						}
+					});
 			}
 		}.start();
     }
 
-	public String getSDCard(){
+	public String getSDCard()
+	{
 		return Environment.getExternalStorageDirectory().getAbsolutePath();
 	}
-	
-	public String getWorkDir(){
+
+	public String getWorkDir()
+	{
 		return getSDCard() + "/MetroCalculatorU/";
 	}
-	
+
 	@Override
 	public void onBackPressed()
 	{
-		if(drawer.isDrawerOpen(Gravity.START)){
+		if (drawer.isDrawerOpen(Gravity.START))
+		{
 			drawer.closeDrawer(Gravity.START);
 			return;
 		}
 		super.onBackPressed();
 	}
-	
-	public String getFromAssets(String fileName){ 
-		try { 
-			InputStreamReader inputReader = new InputStreamReader( getResources().getAssets().open(fileName) ); 
+
+	public String getFromAssets(String fileName)
+	{ 
+		try
+		{ 
+			InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName)); 
 			BufferedReader bufReader = new BufferedReader(inputReader);
 			String line="";
 			String result="";
-			while((line = bufReader.readLine()) != null)
+			while ((line = bufReader.readLine()) != null)
 				result += line;
 			return result;
-		} catch (Exception e) { 
+		}
+		catch (Exception e)
+		{ 
 			e.printStackTrace(); 
 			return "";
 		}
     }
-	
-	public void onButtonClick(View view){
-		TextView text = (TextView) findViewById(R.id.maincontentTextViewresult);
+
+	public void onButtonClick(View view)
+	{
 		String input = ((EditText) findViewById(R.id.maincontentEditTextInput)).getText().toString();
-		text.setText(metro.calculate(input));
+		postTextToOutput(metro.calculate(input));
 	}
-	
+
 	protected void requireExternalStorage()
 	{
 		if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
 		{
-			requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUIRE_EXTERNAL_STORAGE);
+			requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},REQUIRE_EXTERNAL_STORAGE);
 		}
 	}
-	
+
 	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
 	{
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		super.onRequestPermissionsResult(requestCode,permissions,grantResults);
 		boolean flag = grantResults.length > 0;
 		for (int i = 0;i < grantResults.length;i ++)
 		{
@@ -162,7 +189,7 @@ public class MainActivity extends BaseActivity
 			finish();
 		}
 	}
-	
+
 	public int getConnectedType()
 	{
         ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
@@ -173,25 +200,31 @@ public class MainActivity extends BaseActivity
 		}
         return -1;
     }
-	
-	public static String readFileByLines(BufferedReader reader) {
-		try {
+
+	public static String readFileByLines(BufferedReader reader)
+	{
+		try
+		{
 			String tempString = null;
 			StringBuilder sb = new StringBuilder();
 			// 一次读一行，读入null时文件结束
-			while ((tempString = reader.readLine()) != null) {
+			while ((tempString = reader.readLine()) != null)
+			{
 				sb.append(tempString);
 				sb.append("\n");
 			}
 			reader.close();
 			return sb.toString();
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 		return "";
 	}
-	
-	public static String readFileByLines(File file){
+
+	public static String readFileByLines(File file)
+	{
 		try
 		{
 			return readFileByLines(new BufferedReader(new FileReader(file)));
@@ -200,22 +233,71 @@ public class MainActivity extends BaseActivity
 		{}
 		return "";
 	}
-	
-	public static void writeLocalStr(String str,File file){
-		try {
-			if (!file.getParentFile().exists()) {
+
+	public static void writeLocalStr(String str, File file)
+	{
+		try
+		{
+			if (!file.getParentFile().exists())
+			{
 				file.getParentFile().mkdirs();
 			}
 			file.createNewFile();
-			if(str != null && !"".equals(str)){
-				FileWriter fw = new FileWriter(file, true);
+			if (str != null && !"".equals(str))
+			{
+				FileWriter fw = new FileWriter(file,true);
 				fw.write(str);//写入本地文件中
 				fw.flush();
 				fw.close();
 				System.out.println("执行完毕!");
 			}
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
+		}
+	}
+
+	public void postTextToOutput(String str)
+	{
+		if(isInAnimation){
+			return;
+		}
+		Handler handler = new Handler();
+		isInAnimation = true;
+		if (!waitingText.equals(""))
+		{
+			waitingText = str;
+			TranslateAnimation animation = new TranslateAnimation(0,0,0,getWindowManager().getDefaultDisplay().getHeight());
+			animation.setDuration(250);
+			outputView.startAnimation(animation);
+			handler.postDelayed(new Runnable(){
+					@Override
+					public void run()
+					{
+						outputView.setText(waitingText);
+						TranslateAnimation animation = new TranslateAnimation(0,0,getWindowManager().getDefaultDisplay().getHeight(),0);
+						animation.setDuration(250);
+						outputView.startAnimation(animation);
+					}
+				},250);
+			handler.postDelayed(new Runnable(){
+				@Override
+				public void run(){
+					isInAnimation = false;
+				}
+			},500);
+		}else{
+			outputView.setText(waitingText);
+			TranslateAnimation animation = new TranslateAnimation(0,0,getWindowManager().getDefaultDisplay().getHeight(),0);
+			animation.setDuration(250);
+			outputView.startAnimation(animation);
+			handler.postDelayed(new Runnable(){
+					@Override
+					public void run(){
+						isInAnimation = false;
+					}
+				},250);
 		}
 	}
 }
