@@ -23,6 +23,9 @@
 		android:clickable="true"
 		android:background="?attr/android:windowBackground">
 
+		<include
+			layout="@layout/main_nav"/>
+		
 	</LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

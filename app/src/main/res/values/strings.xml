@@ -9,6 +9,8 @@
 	
 	<string name="author">by @南华假人</string>
 	<string name="calculate">计算!</string>
+	<string name="dark_mode">夜间模式:</string>
+	<string name="about">关于</string>
 	
 	<string name="line">线路:</string>
 	<string name="train_type">车型:</string>

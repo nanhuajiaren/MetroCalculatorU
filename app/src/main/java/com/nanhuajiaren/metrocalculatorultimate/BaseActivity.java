@@ -12,12 +12,27 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.widget.EditText;
 import android.view.inputmethod.InputMethodManager;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import android.os.Bundle;
 
 public abstract class BaseActivity extends AppCompatActivity
 {
 	private AlertDialog loadingDialog;
 	protected static final String spName = "settings";
 	private static Boolean isDarkMode = null;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		if(isDarkMode == null){
+			isDarkMode = getDarkMode();
+		}
+		if(!isDarkMode){
+			setTheme(R.style.AppTheme_Light);
+		}
+	}
 	
 	@Override
 	public void setContentView(int layoutResID)
@@ -26,12 +41,6 @@ public abstract class BaseActivity extends AppCompatActivity
 		LinearLayout contentHolder = (LinearLayout) findViewById(R.id.globalframeContentLinearLayout);
 		View content = LayoutInflater.from(this).inflate(layoutResID,contentHolder,false);
 		contentHolder.addView(content);
-		if(isDarkMode == null){
-			isDarkMode = getDarkMode();
-		}
-		if(!isDarkMode){
-			setTheme(R.style.AppTheme_Light);
-		}
 	}
 
 	public void setupToolBar(String title)
@@ -186,4 +195,23 @@ public abstract class BaseActivity extends AppCompatActivity
 	public boolean getDarkMode(){
 		return getSPItem("DarkMode",true);
 	}
+	
+	public String getFromAssets(String fileName)
+	{ 
+		try
+		{ 
+			InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName)); 
+			BufferedReader bufReader = new BufferedReader(inputReader);
+			String line="";
+			String result="";
+			while ((line = bufReader.readLine()) != null)
+				result += line;
+			return result;
+		}
+		catch (Exception e)
+		{ 
+			e.printStackTrace(); 
+			return "";
+		}
+    }
 }

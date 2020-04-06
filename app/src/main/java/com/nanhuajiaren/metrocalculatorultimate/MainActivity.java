@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import android.app.AlertDialog;
 import android.os.Handler;
 import android.view.animation.TranslateAnimation;
+import android.content.Intent;
 
 public class MainActivity extends BaseActivity 
 {
@@ -52,6 +53,7 @@ public class MainActivity extends BaseActivity
 		outputView = (TextView) findViewById(R.id.maincontentTextViewresult);
 		requireExternalStorage();
 		loadMetro();
+		updateDarkModeState();
 	}
 
 	public void loadMetro()
@@ -139,25 +141,6 @@ public class MainActivity extends BaseActivity
 		}
 		super.onBackPressed();
 	}
-
-	public String getFromAssets(String fileName)
-	{ 
-		try
-		{ 
-			InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName)); 
-			BufferedReader bufReader = new BufferedReader(inputReader);
-			String line="";
-			String result="";
-			while ((line = bufReader.readLine()) != null)
-				result += line;
-			return result;
-		}
-		catch (Exception e)
-		{ 
-			e.printStackTrace(); 
-			return "";
-		}
-    }
 
 	public void onButtonClick(View view)
 	{
@@ -299,5 +282,25 @@ public class MainActivity extends BaseActivity
 					}
 				},250);
 		}
+	}
+	
+	public void onNavTextClick(View view){
+		switch(view.getId()){
+			case R.id.mainnavTextViewAbout:
+				startActivity(new Intent(this,AboutActivity.class));
+				break;
+			case R.id.mainnavTextViewDarkMode:
+				saveDarkMode(!getDarkMode());
+				updateDarkModeState();
+				break;
+			default:
+				
+				break;
+		}
+	}
+	
+	public void updateDarkModeState(){
+		TextView text = (TextView) findViewById(R.id.mainnavTextViewDarkMode);
+		text.setText(getString(R.string.dark_mode) + getString(getDarkMode() ? R.string.open : R.string.close));
 	}
 }
