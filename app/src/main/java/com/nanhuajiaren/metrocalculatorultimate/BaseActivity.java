@@ -46,7 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity
 	public void setupToolBar(String title)
 	{
 		Toolbar tool = (Toolbar) findViewById(R.id.toolbar);
-		tool.setTitle(R.string.app_name);
+		tool.setTitle(title);
 		tool.setBackgroundColor(getResources().getColor(R.color.colorMain));
 		setSupportActionBar(tool);
 	}
@@ -190,6 +190,8 @@ public abstract class BaseActivity extends AppCompatActivity
 	
 	public void saveDarkMode(boolean mode){
 		saveSPItem("DarkMode",mode);
+		isDarkMode = null;
+		recreate();
 	}
 	
 	public boolean getDarkMode(){

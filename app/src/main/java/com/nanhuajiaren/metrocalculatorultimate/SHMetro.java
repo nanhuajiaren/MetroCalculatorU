@@ -333,7 +333,7 @@ public class SHMetro
 		}
 		String result = sb.toString();
 		if(result.equals("")){
-			result = ctx.getString(R.string.not_found,carrageNumber);
+			result = ctx.getString(R.string.not_found,carrageNumber) + "\n\n" + ctx.getString(R.string.author);
 		}else{
 			result = result + ctx.getString(R.string.author);
 		}

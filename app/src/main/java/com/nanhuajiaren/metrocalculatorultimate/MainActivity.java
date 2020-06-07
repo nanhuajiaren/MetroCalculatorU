@@ -23,17 +23,22 @@ import java.net.HttpURLConnection;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.FileWriter;
-import android.app.AlertDialog;
 import android.os.Handler;
 import android.view.animation.TranslateAnimation;
 import android.content.Intent;
+import android.os.Build;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 
 public class MainActivity extends BaseActivity 
 {
 	public static final String UPDATE_URL = "https://gitee.com/nanhuajiaren/shmetro.json/raw/master/shmetro.json";
 
 	private static final int REQUIRE_EXTERNAL_STORAGE = 1;
-
+	
 	private volatile SHMetro metro;
 	private volatile boolean isInAnimation = false;
 	private volatile String waitingText = "a";
@@ -51,8 +56,11 @@ public class MainActivity extends BaseActivity
 		toggle.syncState();
 		drawer.setDrawerListener(toggle);
 		outputView = (TextView) findViewById(R.id.maincontentTextViewresult);
-		requireExternalStorage();
-		loadMetro();
+		if(showAgreement()){
+			if(requireExternalStorage()){
+				loadMetro();
+			}
+		}
 		updateDarkModeState();
 	}
 
@@ -145,14 +153,19 @@ public class MainActivity extends BaseActivity
 	public void onButtonClick(View view)
 	{
 		String input = ((EditText) findViewById(R.id.maincontentEditTextInput)).getText().toString();
-		postTextToOutput(metro.calculate(input));
+		if(input.length() > 0){
+			postTextToOutput(metro.calculate(input));
+		}
 	}
 
-	protected void requireExternalStorage()
+	protected boolean requireExternalStorage()
 	{
-		if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+		if (ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
 		{
-			requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},REQUIRE_EXTERNAL_STORAGE);
+			ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},REQUIRE_EXTERNAL_STORAGE);
+			return false;
+		}else{
+			return true;
 		}
 	}
 
@@ -169,7 +182,18 @@ public class MainActivity extends BaseActivity
 		}
 		if (!flag)
 		{
-			finish();
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.storage_permission_info);
+			builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface p1,int p2){
+					requireExternalStorage();
+				}
+			});
+			builder.setCancelable(false);
+			builder.show();
+		}else{
+			loadMetro();
 		}
 	}
 
@@ -243,7 +267,8 @@ public class MainActivity extends BaseActivity
 
 	public void postTextToOutput(String str)
 	{
-		if(isInAnimation){
+		if (isInAnimation)
+		{
 			return;
 		}
 		Handler handler = new Handler();
@@ -265,27 +290,33 @@ public class MainActivity extends BaseActivity
 					}
 				},250);
 			handler.postDelayed(new Runnable(){
-				@Override
-				public void run(){
-					isInAnimation = false;
-				}
-			},500);
-		}else{
+					@Override
+					public void run()
+					{
+						isInAnimation = false;
+					}
+				},500);
+		}
+		else
+		{
 			outputView.setText(waitingText);
 			TranslateAnimation animation = new TranslateAnimation(0,0,getWindowManager().getDefaultDisplay().getHeight(),0);
 			animation.setDuration(250);
 			outputView.startAnimation(animation);
 			handler.postDelayed(new Runnable(){
 					@Override
-					public void run(){
+					public void run()
+					{
 						isInAnimation = false;
 					}
 				},250);
 		}
 	}
-	
-	public void onNavTextClick(View view){
-		switch(view.getId()){
+
+	public void onNavTextClick(View view)
+	{
+		switch (view.getId())
+		{
 			case R.id.mainnavTextViewAbout:
 				startActivity(new Intent(this,AboutActivity.class));
 				break;
@@ -293,14 +324,60 @@ public class MainActivity extends BaseActivity
 				saveDarkMode(!getDarkMode());
 				updateDarkModeState();
 				break;
+			case R.id.mainnavTextViewDonate:
+				startActivity(new Intent(this,DonateActivity.class));
+				break;
+			case R.id.mainnavTextViewAgreement:
+				showAgreement(true);
+				break;
 			default:
-				
+
 				break;
 		}
 	}
-	
-	public void updateDarkModeState(){
+
+	public void updateDarkModeState()
+	{
 		TextView text = (TextView) findViewById(R.id.mainnavTextViewDarkMode);
 		text.setText(getString(R.string.dark_mode) + getString(getDarkMode() ? R.string.open : R.string.close));
+	}
+	
+	private boolean showAgreement(){
+		return showAgreement(false);
+	}
+	
+	private boolean showAgreement(boolean forced){
+		if(!getSPItem("agreement",false) || forced){
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			try
+			{
+				String agreement = readFileByLines(new BufferedReader(new InputStreamReader(getAssets().open("agreement.txt"))));
+				builder.setTitle(R.string.agreement);
+				builder.setMessage(agreement);
+				builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface p1,int p2){
+						saveSPItem("agreement",true);
+						requireExternalStorage();
+					}
+				});
+			}
+			catch (IOException e)
+			{
+				builder.setMessage(R.string.agreement_error);
+				builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface p1,int p2){
+						finish();
+					}
+				});
+			}
+			
+			builder.setCancelable(false);
+			builder.show();
+			return false;
+		}else{
+			return true;
+		}
 	}
 }

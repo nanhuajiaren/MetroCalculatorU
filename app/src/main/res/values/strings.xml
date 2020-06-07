@@ -7,7 +7,7 @@
 	<string name="close">关闭</string>
 	<string name="ok">确认</string>
 	
-	<string name="author">by @南华假人</string>
+	<string name="author">©南华假人</string>
 	<string name="calculate">计算!</string>
 	<string name="dark_mode">夜间模式:</string>
 	<string name="about">关于</string>
@@ -22,4 +22,11 @@
 	<string name="update_time">数据发布时间:</string>
 	<string name="update_info">更新信息:</string>
 
+    <string name="donate">捐赠</string>
+    <string name="donate_info">如果你觉得本应用对你有帮助，请捐赠支持！如果捐赠多的话开发进度也会变快！(非强制性)(持续厚颜无耻中)</string>
+	<string name="storage_permission_info">存储权限为本应用必需，请提供权限。</string>
+	<string name="agreement">地铁计算器用户协议和隐私政策</string>
+	<string name="agreement_error">很抱歉，载入《地铁计算器用户协议和隐私政策》时发生了错误。请联系应用作者 @南华假人。点击确认退出应用。</string>
+	<string name="agreement_short">用户协议和隐私政策</string>
+    
 </resources>

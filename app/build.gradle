@@ -8,8 +8,8 @@ android {
         applicationId "com.nanhuajiaren.metrocalculatorultimate"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 1
-        versionName "U1.0"
+        versionCode 3
+        versionName "U1.1CA"
     }
     buildTypes {
         release {

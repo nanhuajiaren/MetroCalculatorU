@@ -29,5 +29,27 @@
 		android:onClick="onNavTextClick"
 		android:id="@+id/mainnavTextViewAbout"/>
 
+	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:text="@string/donate"
+		android:paddingBottom="10dp"
+		android:paddingTop="10dp"
+		android:paddingLeft="20dp"
+		android:paddingRight="20dp"
+		android:onClick="onNavTextClick"
+		android:id="@+id/mainnavTextViewDonate"/>
+
+	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:text="@string/agreement_short"
+		android:paddingBottom="10dp"
+		android:paddingTop="10dp"
+		android:paddingLeft="20dp"
+		android:paddingRight="20dp"
+		android:onClick="onNavTextClick"
+		android:id="@+id/mainnavTextViewAgreement"/>
+
 </LinearLayout>
 

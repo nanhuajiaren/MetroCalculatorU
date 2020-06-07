@@ -26,7 +26,8 @@
 					android:id="@+id/maincontentEditTextInput"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:hint="@string/enter_carrage_number"/>
+					android:hint="@string/enter_carrage_number"
+					android:singleLine="true"/>
 
 			</android.support.design.widget.TextInputLayout>
 
